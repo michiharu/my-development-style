@@ -9,7 +9,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "fmt": "prettier . --write",
-    "prepare": "husky install"
+    "--prepare": "husky install"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
