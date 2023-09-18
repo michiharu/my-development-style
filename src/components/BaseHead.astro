@@ -26,12 +26,16 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
 <!-- Font preloads -->
 <link
   rel="preload"
-  href={url('/fonts/atkinson-regular.woff" as="font" type="font/woff')}
+  href={url('/fonts/atkinson-regular.woff')}
+  as="font"
+  type="font/woff"
   crossorigin
 />
 <link
   rel="preload"
-  href={url('/fonts/atkinson-bold.woff" as="font" type="font/woff')}
+  href={url('/fonts/atkinson-bold.woff')}
+  as="font"
+  type="font/woff"
   crossorigin
 />
 
