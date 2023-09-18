@@ -8,5 +8,6 @@ export default defineConfig({
   site: 'https://michiharu.github.io',
   base: '/my-way',
   output: 'static',
+  trailingSlash: 'never',
   integrations: [mdx(), sitemap()],
 });
