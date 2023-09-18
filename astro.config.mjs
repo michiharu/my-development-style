@@ -7,7 +7,6 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://michiharu.github.io',
   base: '/my-way',
-  // output: 'static',
-  trailingSlash: 'never',
+  trailingSlash: 'always',
   integrations: [mdx(), sitemap()],
 });
