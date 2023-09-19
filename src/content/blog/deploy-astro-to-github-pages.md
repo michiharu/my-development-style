@@ -1,26 +1,28 @@
 ---
-title: 'Astro を github-pages にデプロイしてみた'
+title: 'Astro を github-pages にデプロイ with Bun'
 description: 'Bun + Astro + Github Action で Github Pages にデプロイした手順について書きます。'
 pubDate: '2023-09-18'
 heroImage: '/blog-placeholder-1.jpg'
 ---
 
-記念すべき最初の記事は、このサイトの作り方です。『鉄は熱いうちに打て』ということで忘れないうちに記事にしておきたいと思います。
+このサイトの作り方についての記事です。
+『鉄は熱いうちに打て』ということで忘れないうちに記事にしておきたいと思います。
 
-使用している技術は次の通りです。
+技術スタックは次の通りです。
 
-- Bun
-  - 世界的ですもんね　乗るしかない　このビッグウェーブに
-- Astro
-  - Docusaurusよりも勢いを感じる
+- Bun(1.0.2)
+  - 世界的ですもんね！　乗るしかない、このビッグウェーブに！
+- Astro(3.1.0)
+  - Docusaurusより勢いを感じてます
 - GitHub Pages
   - 無料
-- TypeScript
+- TypeScript(5.2.2)
   - インターフェースが分かりやすいコードが好き
-- VSCode
+- VSCodes
   - いつもの。Vim とか使いこなせないので。
 
-リポジトリは[こちら](https://github.com/michiharu/my-way)です。
+この記事のために用意したサンプルリポジトリは[こちら](https://github.com/michiharu/deploy-astro-to-github-pages)です。
+
 ちなみに Bun と Astro は初体験です。
 
 ## 環境構築
@@ -50,10 +52,14 @@ Bun側とAstro側にそれぞれ記事があります。
 bun create astro
 ```
 
+![bun create astro](/deploy-astro-to-github-pages/bun-create-astro.png)
+
 いくつか質問されますが、今回の記事で重要なのは以下の２つです。
 
-- 初期テンプレート: ブログ
-- TypeScriptを使う予定か: Yes
+- tmpl: How would you like to start your new project?
+  - Use blog template （ブログ・テンプレートを使う）
+- ts: Do you plan to write TypeScript?
+  - Yes （TypeScriptを使う）
 
 ## Github Pagesへのデプロイ設定
 
@@ -65,71 +71,85 @@ bun create astro
 bun run dev
 ```
 
+![bun run dev](/deploy-astro-to-github-pages/bun-run-dev.png)
+
 Github Pagesへのデプロイ設定には、次の２点がポイントです。
 
-- GitHub Pagesはサブディレクトリへ配置される
+- GitHub Pagesのリンクは、リポジトリ名をサブディレクトリとするURL
 - GitHub Pagesのページリンクは、末尾の`/`(trailing slash)が必須
 
 ### `astro.config.mjs`の編集
 
 [公式ドキュメントはこちら](https://docs.astro.build/ja/guides/deploy/github/)です。
 
-`michiharu`はGitHubのユーザーID、`my-way`はリポジトリ名に変更します。
-適宜ご自身の環境に合わせて読み替えてください。
+```js
+import { defineConfig } from 'astro/config';
+import mdx from '@astrojs/mdx';
 
-```diff
-import { defineConfig } from 'astro/config'
+import sitemap from '@astrojs/sitemap';
 
+// https://astro.build/config
 export default defineConfig({
   site: 'https://michiharu.github.io',
-  base: '/my-way',
-})
+  base: '/deploy-astro-to-github-pages',
+  trailingSlash: 'always',
+  integrations: [mdx(), sitemap()],
+});
 ```
 
-また trailing slash についてはそのままでも動きますが、
-暗黙的な振る舞いはバグを生みやすいので`trailingSlash: 'always'`を設定しましょう。
-設定しておけば「ローカルでは表示されていたのにデプロイしたら404」という不具合を防げます。
+`michiharu`は私のGitHubユーザーID、`deploy-astro-to-github-pages`はリポジトリ名です。
+適宜ご自身の環境に合わせて読み替えてください。
 
-```diff
-import { defineConfig } from 'astro/config'
-
-export default defineConfig({
-  site: 'https://astronaut.github.io',
-  base: '/my-way',
-+ trailingSlash: 'always',
-})
-```
+公式ドキュメントでは記述されていませんが trailing slash についての設定を追加しています。
+そのままでも動きますが開発環境と本番環境で異なる振る舞いはバグの原因になるので、
+本番環境に合わせて`trailingSlash: 'always'`を設定しましょう。
+設定しておけば「ローカルでは表示されていたのにデプロイしたら404」という事故を防げます。
 
 ### 各リンクの修正
 
-GitHub Pagesにデプロイされるということは、サブディレクトリに配置されるということです。
-そのためリンクはすべてサブディレクトリを含む必要があります。
+上記の`astro.config.mjs`を編集すると以下のように404になります。
 
-`astro.config.mjs`の`base`は`import.meta.env.BASE_URL`から参照できるので、
-次のような関数で`import.meta.env.BASE_URL`の参照を共通化しました。
+![bun run dev](/deploy-astro-to-github-pages/404-not-found.png)
+
+この404ページに表示されている`/deploy-astro-to-github-pages/`をクリックすると再びHomeページが表示されます。
+
+![subdirectory home](/deploy-astro-to-github-pages/subdirectory-home.png)
+
+しかしヘッダーのBlog、Aboutなどのリンクをクリックすると404となります。これはテンプレートの各リンクはサブディレクトリを含んでいないためです。
+
+そのためすべてのリンクにサブディレクトリを含める修正が必要です。この課題への対処にはみなさんいろいろ試行錯誤されているようですが、今のところベストプラクティスと言える方法はないようです。
+
+私は地道にサブディレクトリをURLに含むよう修正しました。`astro.config.mjs`の`base`は、リポジトリ名でありサブディレクトリです。この`base`の値は`import.meta.env.BASE_URL`から参照できるので、私は次のような`url`関数で`import.meta.env.BASE_URL`の参照を共通化しました。`url`関数を使うことで、JS側はまとめてサブディレクトリをURLに含められます。
 
 ````typescript
 /**
  * ```typescript
- * url('/blog/') => '/my-way/blog/'
- * url('/image.png') => '/my-way/image.png'
+ * new URL('/')          => '/subdirectory/'
+ * new URL('/blog/')     => '/subdirectory/blog/'
+ * new URL('/image.png') => '/subdirectory/image.png'
  * ```
  */
-export const url = (path: `/${string}` | undefined) => {
+export const url = (path: string | undefined) => {
   if (path === undefined) return undefined;
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   return `${base}${path}`;
 };
 ````
 
-URLの修正ポイントはいくつもあるので、リンクをポチポチしながら修正が必要なところを探してください。
+URLの修正点は[こちらのコミット](https://github.com/michiharu/deploy-astro-to-github-pages/commit/fedc5e4acd312c98080b0b7f0f0b9af2d5c0543b)をご確認ください。
 
-上記`url`関数を使用する修正例を２つ紹介します。
+ブラウザーコンソールを開いて以下の４種類のページの遷移を試しながら不具合・エラーがないかをチェックしています。
 
-`Header.astro`の修正例
+- `/subdirectory/`
+- `/subdirectory/blog/`
+- `/subdirectory/blog/markdown-style-guide/`など
+- `/subdirectory/about/`
+
+`src/components/Header.astro`の修正例
 
 ```diff
-...
+-   <h2><a href="/">{SITE_TITLE}</a></h2>
++   <h2><a href={url('/')}>{SITE_TITLE}</a></h2>
     <div class="internal-links">
 -     <HeaderLink href="/">Home</HeaderLink>
 -     <HeaderLink href="/blog">Blog</HeaderLink>
@@ -138,7 +158,6 @@ URLの修正ポイントはいくつもあるので、リンクをポチポチ�
 +     <HeaderLink href={url('/blog/')}>Blog</HeaderLink>
 +     <HeaderLink href={url('/about/')}>About</HeaderLink>
     </div>
-...
 ```
 
 `BlogPost.astro`の修正例
@@ -149,28 +168,26 @@ import { url } from '../funcs';
 ...
 - const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 + const { title, description, pubDate, updatedDate } = Astro.props;
-+ const heroImage = url(Astro.props.heroImage);
++ const heroImage = new URL(Astro.props.heroImage);
 ...
 ```
 
-またブラウザーのコンソールを開いていないと忘れがちなのが、CSSに記述されたフォントのリンクです。
-
-以下、`global.css`の修正例です。スマートな書き方がわからなかったので直接デプロイ予定のレポジトリ名を含めています。
+続いてブラウザーのコンソールを確認しないと忘れがちなのがCSSに記述されたフォントのリンクです。以下は`global.css`の修正例です。
 
 ```diff
 ...
 @font-face {
   font-family: 'Atkinson';
-- src: url('/fonts/atkinson-regular.woff') format('woff');
-+ src: url('/my-way/fonts/atkinson-regular.woff') format('woff');
+- src: new URL('/fonts/atkinson-regular.woff') format('woff');
++ src: new URL('/my-way/fonts/atkinson-regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Atkinson';
-- src: url('/fonts/atkinson-bold.woff') format('woff');
-+ src: url('/my-way/fonts/atkinson-bold.woff') format('woff');
+- src: new URL('/fonts/atkinson-bold.woff') format('woff');
++ src: new URL('/my-way/fonts/atkinson-bold.woff') format('woff');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -178,10 +195,15 @@ import { url } from '../funcs';
 ...
 ```
 
+`url`関数はCSSには使えないため、直接デプロイ予定のリポジトリ名を含めています。
+
 ### GitHub Actions の設定
 
-[公式ドキュメント](https://docs.astro.build/ja/guides/deploy/github/)の`deploy.yml`を、
-`.github/workflows/deploy.yml`に配置します。
+まずGitHubのページで、Settings > Pages > Build and deployment > Source で `GitHub Actions` を選択します。
+
+![github pages setting](/deploy-astro-to-github-pages/github-pages-setting.png)
+
+次に[公式ドキュメント](https://docs.astro.build/ja/guides/deploy/github/)からコピペして`.github/workflows/deploy.yml`を配置します。
 
 ```yml
 name: Deploy to GitHub Pages
@@ -226,4 +248,8 @@ jobs:
 ```
 
 コメントアウトされている`with:`のオプションは使用しなくても、
-`bun install`が実行され GitHub Pagesへデプロイされました。
+`bun install`が実行され GitHub Pagesへデプロイされます。
+
+![deploy success](/deploy-astro-to-github-pages/deploy-success.png)
+
+おめでとうございます🎉 お疲れ様でした。
