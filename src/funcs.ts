@@ -9,5 +9,3 @@ export const url = (path: `/${string}` | undefined) => {
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   return `${base}${path}`;
 };
-
-export const rootUrl = url('/');

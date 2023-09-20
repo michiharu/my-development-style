@@ -5,21 +5,23 @@ pubDate: '2023-09-18'
 heroImage: '/blog-placeholder-1.jpg'
 ---
 
+import Image from '../../components/Image.astro';
+
 このサイトの作り方についての記事です。
 『鉄は熱いうちに打て』ということで忘れないうちに記事にしておきたいと思います。
 
 技術スタックは次の通りです。
 
 - Bun(1.0.2)
-  - 世界的ですもんね！　乗るしかない、このビッグウェーブに！
+  - 世界的ですもんね！ 乗るしかない、このビッグウェーブに！
 - Astro(3.1.0)
-  - Docusaurusより勢いを感じてます
+  - Docusaurusより勢いを感じます
 - GitHub Pages
   - 無料
 - TypeScript(5.2.2)
   - インターフェースが分かりやすいコードが好き
 - VSCodes
-  - いつもの。Vim とか使いこなせないので。
+  - いつもの
 
 この記事のために用意したサンプルリポジトリは[こちら](https://github.com/michiharu/deploy-astro-to-github-pages)です。
 
@@ -52,7 +54,7 @@ Bun側とAstro側にそれぞれ記事があります。
 bun create astro
 ```
 
-![bun create astro](/deploy-astro-to-github-pages/bun-create-astro.png)
+<Image name="bun-create-astro.png" />
 
 いくつか質問されますが、今回の記事で重要なのは以下の２つです。
 
@@ -71,7 +73,7 @@ bun create astro
 bun run dev
 ```
 
-![bun run dev](/deploy-astro-to-github-pages/bun-run-dev.png)
+<Image name="bun-run-dev.png" />
 
 Github Pagesへのデプロイ設定には、次の２点がポイントです。
 
@@ -109,11 +111,11 @@ export default defineConfig({
 
 上記の`astro.config.mjs`を編集すると以下のように404になります。
 
-![bun run dev](/deploy-astro-to-github-pages/404-not-found.png)
+<Image name="404-not-found.png" />
 
 この404ページに表示されている`/deploy-astro-to-github-pages/`をクリックすると再びHomeページが表示されます。
 
-![subdirectory home](/deploy-astro-to-github-pages/subdirectory-home.png)
+<Image name="subdirectory-home.png" />
 
 しかしヘッダーのBlog、Aboutなどのリンクをクリックすると404となります。これはテンプレートの各リンクはサブディレクトリを含んでいないためです。
 
@@ -201,7 +203,7 @@ import { url } from '../funcs';
 
 まずGitHubのページで、Settings > Pages > Build and deployment > Source で `GitHub Actions` を選択します。
 
-![github pages setting](/deploy-astro-to-github-pages/github-pages-setting.png)
+<Image name="github-pages-setting.png" />
 
 次に[公式ドキュメント](https://docs.astro.build/ja/guides/deploy/github/)からコピペして`.github/workflows/deploy.yml`を配置します。
 
@@ -250,6 +252,6 @@ jobs:
 コメントアウトされている`with:`のオプションは使用しなくても、
 `bun install`が実行され GitHub Pagesへデプロイされます。
 
-![deploy success](/deploy-astro-to-github-pages/deploy-success.png)
+<Image name="deploy-success.png" />
 
 おめでとうございます🎉 お疲れ様でした。

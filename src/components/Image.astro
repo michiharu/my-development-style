@@ -1,0 +1,9 @@
+---
+type Props = {
+  name: string;
+};
+
+const src = `${Astro.url.pathname}${Astro.props.name}`;
+---
+
+<img src={src} />
