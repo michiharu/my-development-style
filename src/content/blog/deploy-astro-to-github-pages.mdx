@@ -79,6 +79,7 @@ Github Pagesへのデプロイ設定には、次の２点がポイントです�
 
 - GitHub Pagesのリンクは、リポジトリ名をサブディレクトリとするURL
 - GitHub Pagesのページリンクは、末尾の`/`(trailing slash)が必須
+  - 末尾の`/`が無い場合はリダイレクトされる
 
 ### `astro.config.mjs`の編集
 
@@ -109,7 +110,7 @@ export default defineConfig({
 
 ### 各リンクの修正
 
-上記の`astro.config.mjs`を編集すると以下のように404になります。
+上記の`astro.config.mjs`を編集すると[http://localhost:4321](http://localhost:4321)は以下のように404になります。
 
 <Image name="404-not-found.png" />
 
