@@ -1,0 +1,38 @@
+---
+import { Icon } from 'astro-icon';
+
+type Props = {
+  href: string;
+};
+
+const { href } = Astro.props;
+---
+
+<p>
+  <a href={href} target="_blank">
+    <cite><slot /> より</cite>
+    <Icon name="mdi:open-in-new" />
+  </a>
+</p>
+<style>
+  p {
+    text-align: right;
+    margin: 0;
+    margin-top: -40px;
+    font-size: 0.8em;
+  }
+  a {
+    color: var(--accent-dark);
+    text-decoration: underline var(--accent-dark) dotted 1px;
+    text-underline-offset: 4px;
+  }
+  cite {
+    font-style: normal;
+  }
+  svg {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+    translate: 2px -2px;
+  }
+</style>

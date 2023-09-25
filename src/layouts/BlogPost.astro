@@ -4,15 +4,14 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import { url } from '../funcs';
 
 type Props = CollectionEntry<'blog'>['data'];
 
 const { title, description, pubDate, updatedDate } = Astro.props;
-const heroImage = url(Astro.props.heroImage);
+const heroImage = `${Astro.url.pathname}${Astro.props.heroImage}`;
 ---
 
-<html lang="en">
+<html lang="ja">
   <head>
     <BaseHead title={title} description={description} />
     <style>
@@ -67,8 +66,9 @@ const heroImage = url(Astro.props.heroImage);
                 width={1020}
                 height={510}
                 src={heroImage}
-                alt=""
+                alt={heroImage}
                 transition:name={heroImage}
+                loading="eager"
               />
             )
           }

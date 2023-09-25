@@ -8,7 +8,11 @@ import FormattedDate from '../components/FormattedDate.astro';
 import { url } from '../funcs';
 
 const posts = (await getCollection('blog'))
-  .map((b) => ({ ...b, data: { ...b.data, heroImage: url(b.data.heroImage) } }))
+  .map((b) => {
+    const heroImage = url(`/blog/${b.slug}/${b.data.heroImage}`);
+    return { ...b, data: { ...b.data, heroImage } };
+  })
+  .filter((b) => import.meta.env.DEV || !b.data.draft)
   .sort((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf());
 ---
 

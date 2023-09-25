@@ -1,0 +1,22 @@
+{
+  "parser": {
+    ".astro$": "@markuplint/astro-parser"
+  },
+  "extends": [
+    "markuplint:recommended"
+  ],
+  "nodeRules": [
+    {
+      "selector": "a",
+      "rules": {
+        "invalid-attr": false
+      }
+    },
+    {
+      "selector": "svg",
+      "rules": {
+        "invalid-attr": false
+      }
+    }
+  ]
+}

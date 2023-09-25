@@ -1,0 +1,14 @@
+---
+import Cite from './Cite.astro';
+
+type Props = {
+  word: string;
+};
+
+const { word } = Astro.props;
+const href = `https://www.oxfordlearnersdictionaries.com/definition/english/${word}`;
+---
+
+<Cite href={href} `>
+  Oxford Learner's Dictionaries: {word}
+</Cite>

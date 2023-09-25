@@ -1,9 +1,11 @@
 ---
 type Props = {
-  name: string;
+  name: `${string}_${number}_${number}.${string}`;
 };
 
-const src = `${Astro.url.pathname}${Astro.props.name}`;
+const { name } = Astro.props;
+const src = `${Astro.url.pathname}${name}`;
+const [_, width, height] = name.match(/^.+_([0-9]+)_([0-9]+)\.(.+)$/)!;
 ---
 
-<img src={src} />
+<img src={src} width={width} height={height} decoding="async" />
