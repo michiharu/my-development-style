@@ -3,14 +3,15 @@ import { Icon } from 'astro-icon';
 
 type Props = {
   href: string;
+  text: string;
 };
 
-const { href } = Astro.props;
+const { href, text } = Astro.props;
 ---
 
 <p>
   <a href={href} target="_blank">
-    <cite><slot /> より</cite>
+    <cite>『{text}』より</cite>
     <Icon name="mdi:open-in-new" />
   </a>
 </p>
@@ -18,8 +19,9 @@ const { href } = Astro.props;
   p {
     text-align: right;
     margin: 0;
-    margin-top: -40px;
-    font-size: 0.8em;
+    margin-top: -2em;
+    margin-bottom: 2em;
+    font-size: 0.75em;
   }
   a {
     color: var(--accent-dark);
