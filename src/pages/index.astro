@@ -13,7 +13,9 @@ const posts = (await getCollection('blog'))
     return { ...b, data: { ...b.data, heroImage } };
   })
   .filter((b) => import.meta.env.DEV || !b.data.draft)
-  .sort((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf());
+  .sort((a, b) =>
+    a.data.pubDate.valueOf() < b.data.pubDate.valueOf() ? 1 : -1,
+  );
 ---
 
 <!doctype html>

@@ -1,39 +1,39 @@
 ---
-title: 'Astro を github-pages にデプロイ with Bun'
-description: 'Bun + Astro + Github Action で Github Pages にデプロイした手順について書きます。'
+title: 'Deploy Astro to github-pages with Bun'
+description: 'I wrote about the steps to deploy Astro to Github Pages with Bun + Github Action.'
 pubDate: '2023-09-18'
 heroImage: 'blog-placeholder-1_960_480.jpg'
 ---
 
 import Image from '../../components/Image.astro';
 
-このサイトの作り方についての記事です。
-『鉄は熱いうちに打て』ということで忘れないうちに記事にしておきたいと思います。
+This article is about how to create this site.
+"Strike while the iron is hot" so I would like to write this article before I forget.
 
-技術スタックは次の通りです。
+The technology stack is as follows:
 
 - Bun(1.0.2)
-  - 世界的ですもんね！ 乗るしかない、このビッグウェーブに！
+  - "Sekaiteki desu monne! Norushikanai, kono big wave ni!"
 - Astro(3.1.0)
-  - Docusaurusより勢いを感じます
+  - Astro is more popular than Docusaurus. (as far as I know)
 - GitHub Pages
-  - 無料
+  - Free.
 - TypeScript(5.2.2)
-  - インターフェースが分かりやすいコードが好き
+  - I like statically typed languages.
 - VSCodes
-  - いつもの
+  - The usual editor.
 
-この記事のために用意したサンプルリポジトリは[こちら](https://github.com/michiharu/deploy-astro-to-github-pages)です。
+<Image name="big-wave_500_281.png" />
 
-ちなみに Bun と Astro は初体験です。
+The sample repository prepared for this article is [here](https://github.com/michiharu/deploy-astro-to-github-pages).
 
-## 環境構築
+## Prepare the environment
 
-VSCodeはインストール済みとして進めます。
+The explanation assumes that VSCode is already installed.
 
-### Bun のインストール
+### Install Bun
 
-私はmacOSなので[公式ページの方法](https://bun.sh/)でインストールしました。
+Since I am a macOS user, I installed bun using the command on [the official page](https://bun.sh/).
 
 ```zsh
 curl -fsSL https://bun.sh/install | bash
@@ -41,14 +41,14 @@ bun -v
 1.0.2
 ```
 
-### Bun + Astro でプロジェクトの作成
+### Create an astro project with Bun
 
-Bun側とAstro側にそれぞれ記事があります。
+There are articles on the Bun side and Astro side.
 
 - [Bun: Build an app with Astro and Bun](https://bun.sh/guides/ecosystem/astro)
 - [Astro: Use Bun with Astro](https://docs.astro.build/ja/recipes/bun/)
 
-私はBun側の記事を参考に以下のコマンドを実行しました。
+I executed the following command referring to the article on the Bun side.
 
 ```bash
 bun create astro
@@ -56,18 +56,16 @@ bun create astro
 
 <Image name="bun-create-astro_1742_1446.png" />
 
-いくつか質問されますが、今回の記事で重要なのは以下の２つです。
+You will be asked a number of questions, but the two most important in this article are:
 
 - tmpl: How would you like to start your new project?
-  - Use blog template （ブログ・テンプレートを使う）
+  - Use blog template
 - ts: Do you plan to write TypeScript?
-  - Yes （TypeScriptを使う）
+  - Yes
 
-## Github Pagesへのデプロイ設定
+## Deployment settings to Github Pages
 
-ここからはVSCodeを開いて作業しました。
-
-まずはブラウザー([http://localhost:4321](http://localhost:4321))で確認できるようにしておきます。
+Open VSCode and start the local environment([http://localhost:4321](http://localhost:4321)).
 
 ```bash
 bun run dev
@@ -75,15 +73,15 @@ bun run dev
 
 <Image name="bun-run-dev_1742_1446.png" />
 
-Github Pagesへのデプロイ設定には、次の２点がポイントです。
+The following two points are important when setting up deployment to Github Pages.
 
-- GitHub Pagesのリンクは、リポジトリ名をサブディレクトリとするURL
-- GitHub Pagesのページリンクは、末尾の`/`(trailing slash)が必須
-  - 末尾の`/`が無い場合はリダイレクトされる
+- The subdirectory name is the repository name.
+- GitHub Pages link must have a trailing slash (`/`) at the end.
+  - If the trailing slash (`/`) is missing, it will be redirected.
 
-### `astro.config.mjs`の編集
+### Configure `astro.config.mjs`
 
-[公式ドキュメントはこちら](https://docs.astro.build/ja/guides/deploy/github/)です。
+Official documentation is [here](https://docs.astro.build/ja/guides/deploy/github/)
 
 ```js
 import { defineConfig } from 'astro/config';
@@ -100,36 +98,41 @@ export default defineConfig({
 });
 ```
 
-`michiharu`は私のGitHubユーザーID、`deploy-astro-to-github-pages`はリポジトリ名です。
-適宜ご自身の環境に合わせて読み替えてください。
+`michiharu` is my GitHub user ID and `deploy-astro-to-github-pages` is the repository name.
+Please read as appropriate to suit your own environment.
 
-公式ドキュメントでは記述されていませんが trailing slash についての設定を追加しています。
-そのままでも動きますが開発環境と本番環境で異なる振る舞いはバグの原因になるので、
-本番環境に合わせて`trailingSlash: 'always'`を設定しましょう。
-設定しておけば「ローカルでは表示されていたのにデプロイしたら404」という事故を防げます。
+Although it is not described in the official documentation, settings for trailing slash have been added.
+It will work as is, but different behavior between the development environment and the production environment will cause bugs.
+So set `trailingSlash: 'always'` according to your production environment.
+By setting this, you can prevent accidents such as "It was displayed locally but 404 when deployed".
 
-### 各リンクの修正
+### Modify each link
 
-上記の`astro.config.mjs`を編集すると[http://localhost:4321](http://localhost:4321)は以下のように404になります。
+When you edit the above `astro.config.mjs`, [http://localhost:4321](http://localhost:4321) becomes 404 as shown below.
 
 <Image name="404-not-found_2142_1418.png" />
 
-この404ページに表示されている`/deploy-astro-to-github-pages/`をクリックすると再びHomeページが表示されます。
+If you click `/deploy-astro-to-github-pages/` displayed on this 404 page, the Home page will be displayed again.
 
 <Image name="subdirectory-home_2142_1418.png" />
 
-しかしヘッダーのBlog、Aboutなどのリンクをクリックすると404となります。これはテンプレートの各リンクはサブディレクトリを含んでいないためです。
+However, when I click on the blog, about, etc. links in the header, I get a 404 error.
+This is because each link in the astro template does not contain subdirectories.
 
-そのためすべてのリンクにサブディレクトリを含める修正が必要です。この課題への対処にはみなさんいろいろ試行錯誤されているようですが、今のところベストプラクティスと言える方法はないようです。
+Therefore, it is necessary to modify all links to include subdirectories.
+It seems like everyone is trying various things to deal with this issue, but there doesn't seem to be a best practice method so far.
 
-私は地道にサブディレクトリをURLに含むよう修正しました。`astro.config.mjs`の`base`は、リポジトリ名でありサブディレクトリです。この`base`の値は`import.meta.env.BASE_URL`から参照できるので、私は次のような`url`関数で`import.meta.env.BASE_URL`の参照を共通化しました。`url`関数を使うことで、JS側はまとめてサブディレクトリをURLに含められます。
+I steadily modified the URL to include the subdirectory.
+`base` in `astro.config.mjs` is the repository name and subdirectory.
+This `base` value can be referenced from `import.meta.env.BASE_URL`, so I shared the reference of `import.meta.env.BASE_URL` with the `url` function as follows.
+By using the `url` function, the JS side can include all subdirectories in the URL.
 
 ````typescript
 /**
  * ```typescript
- * new URL('/')          => '/subdirectory/'
- * new URL('/blog/')     => '/subdirectory/blog/'
- * new URL('/image_200_100.png') => '/subdirectory/image_200_100.png'
+ * url('/')          => '/subdirectory/'
+ * url('/blog/')     => '/subdirectory/blog/'
+ * url('/image_200_100.png') => '/subdirectory/image_200_100.png'
  * ```
  */
 export const url = (path: string | undefined) => {
@@ -139,16 +142,16 @@ export const url = (path: string | undefined) => {
 };
 ````
 
-URLの修正点は[こちらのコミット](https://github.com/michiharu/deploy-astro-to-github-pages/commit/fedc5e4acd312c98080b0b7f0f0b9af2d5c0543b)をご確認ください。
+Please check [this commit](https://github.com/michiharu/deploy-astro-to-github-pages/commit/fedc5e4acd312c98080b0b7f0f0b9af2d5c0543b).
 
-ブラウザーコンソールを開いて以下の４種類のページの遷移を試しながら不具合・エラーがないかをチェックしています。
+I open the browser console and try the following four types of page transitions to check for any defects or errors.
 
 - `/subdirectory/`
 - `/subdirectory/blog/`
-- `/subdirectory/blog/markdown-style-guide/`など
+- `/subdirectory/blog/markdown-style-guide/`
 - `/subdirectory/about/`
 
-`src/components/Header.astro`の修正例
+`src/components/Header.astro`
 
 ```diff
 -   <h2><a href="/">{SITE_TITLE}</a></h2>
@@ -163,7 +166,7 @@ URLの修正点は[こちらのコミット](https://github.com/michiharu/deploy
     </div>
 ```
 
-`BlogPost.astro`の修正例
+`BlogPost.astro`
 
 ```diff
 ...
@@ -171,11 +174,12 @@ import { url } from '../funcs';
 ...
 - const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 + const { title, description, pubDate, updatedDate } = Astro.props;
-+ const heroImage = new URL(Astro.props.heroImage);
++ const heroImage = url(Astro.props.heroImage);
 ...
 ```
 
-続いてブラウザーのコンソールを確認しないと忘れがちなのがCSSに記述されたフォントのリンクです。以下は`global.css`の修正例です。
+Next, what you tend to forget unless you check the browser console is the font link written in CSS.
+Below is an example of modifying `global.css`.
 
 ```diff
 ...
@@ -198,15 +202,15 @@ import { url } from '../funcs';
 ...
 ```
 
-`url`関数はCSSには使えないため、直接デプロイ予定のリポジトリ名を含めています。
+Since the `url` function cannot be used for CSS, I include the repository name that I plan to deploy directly.
 
-### GitHub Actions の設定
+### Configuring GitHub Actions
 
-まずGitHubのページで、Settings > Pages > Build and deployment > Source で `GitHub Actions` を選択します。
+On your GitHub page, select `GitHub Actions` under Settings > Pages > Build and deployment > Source.
 
 <Image name="github-pages-setting_2142_1418.png" />
 
-次に[公式ドキュメント](https://docs.astro.build/ja/guides/deploy/github/)からコピペして`.github/workflows/deploy.yml`を配置します。
+Next, copy the [official documentation](https://docs.astro.build/ja/guides/deploy/github/) and save as `.github/workflows/deploy.yml`.
 
 ```yml
 name: Deploy to GitHub Pages
@@ -250,9 +254,9 @@ jobs:
         uses: actions/deploy-pages@v1
 ```
 
-コメントアウトされている`with:`のオプションは使用しなくても、
-`bun install`が実行され GitHub Pagesへデプロイされます。
+Even if you do not use the commented out `with:` option,
+`bun install` will be executed and deployed to GitHub Pages.
 
 <Image name="deploy-success_2142_1418.png" />
 
-おめでとうございます🎉 お疲れ様でした。
+Congratulations 🎉 Thank you for your hard work.
