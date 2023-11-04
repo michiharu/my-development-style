@@ -127,12 +127,11 @@ I steadily modified the URL to include the subdirectory.
 This `base` value can be referenced from `import.meta.env.BASE_URL`, so I shared the reference of `import.meta.env.BASE_URL` with the `url` function as follows.
 By using the `url` function, the JS side can include all subdirectories in the URL.
 
-````typescript
+````typescript:src/funcs.ts
 /**
  * ```typescript
  * url('/')          => '/subdirectory/'
  * url('/blog/')     => '/subdirectory/blog/'
- * url('/image_200_100.png') => '/subdirectory/image_200_100.png'
  * ```
  */
 export const url = (path: string | undefined) => {
@@ -151,9 +150,7 @@ I open the browser console and try the following four types of page transitions 
 - `/subdirectory/blog/markdown-style-guide/`
 - `/subdirectory/about/`
 
-`src/components/Header.astro`
-
-```diff
+```diff:src/components/Header.astro
 -   <h2><a href="/">{SITE_TITLE}</a></h2>
 +   <h2><a href={url('/')}>{SITE_TITLE}</a></h2>
     <div class="internal-links">
@@ -166,9 +163,7 @@ I open the browser console and try the following four types of page transitions 
     </div>
 ```
 
-`BlogPost.astro`
-
-```diff
+```diff:src/layouts/BlogPost.astro
 ...
 import { url } from '../funcs';
 ...
@@ -179,9 +174,9 @@ import { url } from '../funcs';
 ```
 
 Next, what you tend to forget unless you check the browser console is the font link written in CSS.
-Below is an example of modifying `global.css`.
+Below is an example of the modification.
 
-```diff
+```diff:src/styles/global.css
 ...
 @font-face {
   font-family: 'Atkinson';

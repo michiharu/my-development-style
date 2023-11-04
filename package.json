@@ -23,7 +23,8 @@
     "@astrojs/rss": "^3.0.0",
     "@astrojs/sitemap": "^3.0.3",
     "astro": "^3.4.3",
-    "astro-icon": "^0.8.1"
+    "astro-icon": "^0.8.1",
+    "remark-code-titles": "^0.1.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.3.1",
