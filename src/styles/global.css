@@ -136,6 +136,9 @@ td,
 th {
   padding: 0.5em;
 }
+p + table {
+  margin-top: -2em;
+}
 
 @media (max-width: 720px) {
   body {

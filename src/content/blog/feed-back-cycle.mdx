@@ -1,6 +1,6 @@
 ---
-title: 'フィードバックサイクルを短くしよう'
-description: '『レガシーコードからの脱却』から開発を高速化するヒント'
+title: 'Reduce the feedback cycle'
+description: 'Tips for speeding up development by "Beyond Legacy Code".'
 pubDate: '2023-09-23'
 heroImage: 'driving_4256_2832.jpg'
 ---
@@ -12,171 +12,155 @@ import OxDictCite from '../../components/OxDictCite.astro';
 export const legacyCodeUrl =
   'https://www.amazon.co.jp/%25E3%2583%25AC%25E3%2582%25AC%25E3%2582%25B7%25E3%2583%25BC%25E3%2582%25B3%25E3%2583%25BC%25E3%2583%2589%25E3%2581%258B%25E3%2582%2589%25E3%2581%25AE%25E8%2584%25B1%25E5%258D%25B4-%25E2%2580%2595%25E3%2582%25BD%25E3%2583%2595%25E3%2583%2588%25E3%2582%25A6%25E3%2582%25A7%25E3%2582%25A2%25E3%2581%25AE%25E5%25AF%25BF%25E5%2591%25BD%25E3%2582%2592%25E5%25BB%25B6%25E3%2581%25B0%25E3%2581%2597%25E4%25BE%25A1%25E5%2580%25A4%25E3%2582%2592%25E9%25AB%2598%25E3%2582%2581%25E3%2582%258B9%25E3%2581%25A4%25E3%2581%25AE%25E3%2583%2597%25E3%2583%25A9%25E3%2582%25AF%25E3%2583%2586%25E3%2582%25A3%25E3%2582%25B9-David-Scott-Bernstein/dp/4873118867?&_encoding=UTF8&tag=michi1diver-22&linkCode=ur2&linkId=e758cbd1b5bf79b87aea809f655ddbc9&camp=247&creative=1211';
 
-スムーズに開発を進められると気持ちいいですね。
-スムーズに開発を進められるかどうかはフィードバックサイクルが大きく関係しています。
+It feels good to be able to proceed with development smoothly.
+The feedback cycle is the key to smooth development.
 
-この記事では**コードの正しさを確認できる情報**を**フィードバック**、
-フィードバックを確認する一連のプロセスを**フィードバックサイクル**と表現します。
+By the way, what is feedback?
 
-書籍『レガシーコードからの脱却』では次のように述べられています。
+In this article, feedback is defined as information that allows you to check the correctness of your code.
+The series of processes for checking feedback is called a feedback cycle.
 
-> フィードバックサイクルの観点では、小さなバッチが望ましい。
-> ソフトウェア開発におけるフィードバックサイクルの**ほとんどすべて**に当てはまる。
+The book "Beyond Legacy Code" states:
+
+> Small batches are desirable from a feedback cycle perspective.
+> This applies to almost all feedback cycles in software development.
 >
-> <Cite
->   href={legacyCodeUrl}
->   text="レガシーコードからの脱却 - フィードバックサイクルを短くする"
-> />
+> <Cite href={legacyCodeUrl} text="Beyond Legacy Code" />
 
-コードを書きながらリアルタイムにフィードバックが確認できる環境が理想です。
-そのような環境では、間違ったコードを書いていてもすぐ気がついて修正できます。
-フィードバックサイクルが短いほどスムーズな開発体験に貢献します。
+The ideal environment is one where you can check feedback in real time while writing code.
+In such an environment, even if you are writing incorrect code, you can quickly notice and correct it.
+A smaller feedback cycle contributes to a smoother development experience.
 
-そして、このような環境の実現にはビルド時間が大きく関係します。
-再び『レガシーコードからの脱却』から引用します。
+The build time is greatly related to the realization of such an environment.
+I'll quote again from "Beyond Legacy Code":
 
-> 私が「ビルドを高速化しろ」という意図は、
-> **3時間ではなく3秒以内に結果を返してくれるようなビルド環境を作れ**、ということだ。
+> Create a build environment that returns results within 3 seconds instead of 3 hours.
 >
-> <Cite
->   href={legacyCodeUrl}
->   text="レガシーコードからの脱却 - ビルドを高速化する"
-> />
+> <Cite href={legacyCodeUrl} text="Beyond Legacy Code" />
 
-今回の記事ではフィードバックサイクルとビルド時間のインパクトについて、
-自分の考えや体験を書いていきます。
+## Feedback cycle in development
 
-## フィードバックサイクルと開発効率
+With the theme of web UI development, let's consider the impact of the feedback cycle on development.
+UI development involves repeating the process of changing code and checking it in the browser.
+The breakdown of the cycle is as follows:
 
-WEBのUI開発を題材としてフィードバックサイクルが開発効率に与える影響について考えてみます。
-UI開発ではコードを変更してブラウザーで確認する、という作業の繰り返しです。
-そのサイクルは次のような内訳です。
+- Change and save code
+- Wait for changes to appear in browser
+- Confirm the changes displayed in your browser
 
-- 変更 : コードを変更して保存
-- 待機 : 変更内容がブラウザーに表示されるまで待機
-- 確認 : ブラウザーに表示された変更を確認
+Change + Wait + Confirm is one cycle.
+Calculate the number of cycles per hour in an environment where the waiting time is 1 second and 60 seconds.
 
-変更＋待機＋確認で1回の作業とします。待機の時間が1秒の環境と60秒の環境で1時間あたりの作業回数を計算します。
+All conditions are:
 
-前提条件として1回の変更に60秒、その60秒の変更範囲をブラウザーで確認する時間が10秒だとして、
-計算結果は次のとおりです。
+| Action                                        | Seconds per cycle |
+| :-------------------------------------------- | ----------------: |
+| Change and save code                          |            60 sec |
+| Wait for changes to appear in browser         |   1 sec or 60 sec |
+| Confirm the changes displayed in your browser |            10 sec |
 
-| 待機時間 |  1時間(3600秒)あたりの<br/>作業回数  | 作業時間における<br/>待機時間の割合 |
-| :------: | :----------------------------------: | :---------------------------------: |
-|   1秒    | 3600 ÷ (60 + 1 + 10) = 約**50.7**回  |             約**1.5**%              |
-|   60秒   | 3600 ÷ (60 + 60 + 10) = 約**27.7**回 |              約**46**%              |
+Calculating the number of cycles per hour is:
 
-開発効率は２倍ぐらい違います。
-そうなりますよね、60秒待機が必要な環境では作業時間のほぼ半分は待機時間ですから。
+| Waiting time (sec) | Number of cycles per hour           |
+| -----------------: | :---------------------------------- |
+|              1 sec | 3600 ÷ (60 + 1 + 10) = 50.7 cycles  |
+|             60 sec | 3600 ÷ (60 + 60 + 10) = 27.7 cycles |
 
-実際に表示時間が60秒の開発環境では、きっとエンジニアは作業の進め方を「工夫」します。
-どのような工夫かというとバッチを大きくすることで確認回数を減らします。
-これは『レガシーコードからの脱却』の「小さなバッチが望ましい」というアドバイスを
-無視することになりますね。
+In an environment where 60 seconds of waiting is required, almost half of the work time is waiting time.
+That's why build time is so important.
 
-バッチを大きくすると待機時間を減らせるかもしれませんが、
-無駄なコストや不要なリスクを発生させます。
+Larger batches may reduce waiting time,
+but this may result in unnecessary costs and risks.
 
-変更範囲と作業時間の関係、変更範囲と結果の確認時間の関係は一次関数ではありません。
-どのような関数になるか分かりませんが、指数関数や階乗のような曲線のはずです。
+The relationship between the scope of changes and work time is not a linear function.
+I don't know what kind of function it will be, but it should be a curve like an exponential function or a factorial.
 
-つまり変更範囲を広げれば、その作業や結果の確認により多くの時間を費やすことになります。
-もちろん結果の確認に十分な時間を掛けないとバグのリスクを高めます。
+The more scope of change you make, the more time you will spend on it.
 
-このようなバッチの調整ではなく、高速なフィードバックを実現する開発環境の構築を目指しましょう。
+## Various feedbacks
 
-## 多様なフィードバック
+As one of the feedback, I gave an example of checking in the browser,
+Other feedback includes:
 
-冒頭ではフィードバックを**コードの正しさを確認できる情報**と定義していました。
-フィードバックの１つとしてブラウザーで確認する例を挙げましたが、
-他のフィードバックとしては次のようなものがあります。
+- Feedback from editor
+  - Syntax highlighting
+  - Type check result
+  - Lint checking and auto-correction
+- Unit test execution results
+- Feedback via interactive execution environment (e.g. Jupyter Notebook)
+- Logs
 
-- エディターによるフィードバック
-  - シンタックスハイライト
-  - 型チェック
-  - リントチェックと自動修正
-- テストの実行結果
-- 対話型実行環境によるフィードバック（Jupyter Notebookなど）
-- ログ
+Let's create an environment where these things are automatically feedback.
+By utilizing such feedback, you can write correct code with fewer attempts.
 
-これらのフィードバックをしっかり活用できる環境を作りましょう。
-どれも自動でフィードバックされる環境が望ましいです。
+## Let's buy time with money
 
-エディター上で確認できる型チェックの結果やテストの実行結果は、
-手動の動作確認よりも素早くフィードバックされます。
-そういったフィードバックを活かすことでより少ない試行回数で正しいコードに着地できます。
-
-## 最低限のマシンスペックは確保しよう
-
-速さの追求は終わることがないですね。
+The pursuit of speed never ends.
 
 - Webpack => Vite or Turbopack
 - Nodejs => Deno => Bun
 
-Viteを初めて触ったとき、速さに感動しました。
-素晴らしい言語、ツールを開発してくださっている皆様に感謝です。
+When I first tried Vite, I was impressed by how fast it was.
+Thank you to everyone who develops wonderful languages and tools.
 
-高速な技術を採用して、開発環境のフィードバックサイクルを短くすることは重要ですが、
-より手っ取り早くシンプルに高速化する手段があります。
+Although it is important to adopt fast techniques and reduce feedback cycles in the development environment,
+There is a faster, simpler way to speed things up.
 
-ちゃんとしたマシンを使いましょう。最低20万ぐらいはお金を掛けましょう。
+Use a proper machine. Spend at least $1,200.
 
-ここでは私が経験した低スペックマシンによる最悪な開発体験を２つ紹介します。
+Here I will introduce two of the worst development experiences I had on low-spec machines.
 
-### 15分待ちの動作確認
+### 15 minute build time
 
-私のエンジニアとしての最初の仕事は2012年ごろ、まだ大学生でした。
-仕事はAndroidアプリの開発で、
-大学入学のタイミングで購入したメモリ1GBのノートパソコンでスタートしました。
-まずAndroidのエミュレーターを起動して動作確認できるように環境を構築しました。
-そしてEclipseの▷ボタンをクリックしてから15~20分ほど待つことが分かりました。
+My first job as an engineer was around 2012, when I was still a university student.
+My work is developing Android apps.
+I started with a laptop with 1GB of memory that I bought when I entered university.
+First, I started an Android emulator and created an environment to check its operation.
+And I found out that it takes about 15 to 20 minutes after clicking the ▷ button in Eclipse.
 
-これはまずいと思い、2~3日で新しいメモリ8GBのノートパソコンを購入しました。
-さらにエミュレーターではなく実機でデバックするようにしました。
-すると▷ボタンをクリックして10秒程度で実機上で動作確認ができるようになりました。
-自分のパソコンで仕事させてもらえる環境だったのですぐ問題が解決したのはラッキーでした。
+I thought this was bad, so within a few days I bought a new laptop with 8GB of memory.
+Furthermore, I debugged on the actual device instead of the emulator.
+Then, you can check the operation on the actual device in about 10 seconds by clicking the ▷ button.
+I was lucky that I was able to work on my own computer, so the problem was quickly resolved.
 
-### TypeScript の補完候補表示に3分待ち
+### 3 minutes to display TypeScript code completion
 
-2020年以降の開発にはメモリ8GBでも足りませんよ、という話です。
+The story is that even 8GB of memory will not be enough for development after 2022.
 
-2022年、VSCode, TypeScript, Vite, Vue3, Volar(Vue3のVSCode拡張) といった技術で、
-新規プロジェクトがスタートしました。
+In 2022, with technologies such as VSCode, TypeScript, Vite, Vue3, Volar (VSCode extension of Vue3),
+A new project has started.
 
-しかしいざ開発環境を整えてみるとエディターが非常に重たいのです。
-私は会社支給のHPのメモリ8GBを搭載したノートPCを使用していましたが、
-メモリの使用状況をみると8GBを使い切ってメモリ⇄SSDのスワップが発生していたのでしょう。
+However, when I set up the development environment, the editor was very heavy.
+I was using a company-issued HP laptop with 8GB of memory.
+Looking at the memory usage status, 8GB was used up and memory ⇄ SSD swapping occurred.
 
-VSCode上にTypeScriptのエラーや補完候補を表示するのに3分以上、
-ファイル保存前のESLint + Prettierの処理が3分以上という地獄のような開発環境でした。
+It takes more than 3 minutes to display TypeScript errors and code completion on VSCode.
+It was a hellish development environment, with ESLint + Prettier processing taking over 3 minutes before saving the file.
 
-1日の4時間以上はPCの処理待ちという状況だったと思います。
-仕事が進まないということは自分のスキルも伸びないということです。
-ずっと損している気持ちで仕事をしていて、とにかくしんどかったですね。
+I think I was in a situation where I was waiting for the PC to process for more than 4 hours a day.
+If your work isn't progressing, it means your skills aren't improving either.
+I was constantly working with the feeling that I was wasting time, and it was really exhausting.
 
-その後2023年から同じマシンで Nextjs の開発も経験しましたが、
-TypeScriptのエラー・補完候補の表示は2〜10秒、ファイル保存前のESLint + Prettierの処理は2〜3秒でした。
-Nextjsの開発体験と比較すると Vue3 の TypeScript対応はかなり難しかった（過去形？）ということが分かりますね。
-とはいえ、十分なマシンスペックがあればTypeScriptの補完候補は3秒以内に表示されていたと思います。
+After that, I also experienced the development of Nextjs on the same machine from 2023,
+TypeScript errors and code completion were displayed in 2-10 seconds, and ESLint + Prettier processing before saving the file took 2-3 seconds.
+When I compared my development experience with Nextjs, I realized that the compatibility between Vue3 and TypeScript was quite poor.
+That said, I think TypeScript code completion would have been displayed within 3 seconds if the machine specs were sufficient.
 
-個人開発で使用している2017年モデルの macbook pro (メモリ16GB)でも、VSCode, TypeScript, Vite, React の開発では
-TypeScriptのエラー・補完候補の表示は瞬時、ファイル保存前のESLint + Prettierも瞬時です。
+Even with the 2017 model MacBook Pro (16GB of memory) that I use for personal development,
+TypeScript errors and code completion are displayed instantly, and ESLint + Prettier before saving the file is also instantaneous.
 
-どれだけ最低限のマシンスペックが開発速度に影響するか、よく分かる経験でした。
+It was an experience that made me understand just how much machine specs affect development speed.
 
-## まとめ
+## Conclusion
 
-フィードバックサイクルは、開発効率にとても大きな影響を与えます。
-そのためフィードバックサイクルを短くするために時間を投資したとして
-その時間を回収できる見込みはおそらく高いと思います。
+The feedback cycle is the key to smooth development.
+If you invest in reducing feedback cycles,
+In many cases, you will be able to recover your investment.
 
-以下を目指して開発環境を整えたいところです。
+The approximate build time for web development is as follows:
 
-| フロントエンド    | バックエンド                |
-| ----------------- | --------------------------- |
-| 画面表示を1秒以内 | 単体テスト結果表示を3秒以内 |
+| Frontend                       | Backend                                    |
+| ------------------------------ | ------------------------------------------ |
+| Screen display within 1 second | Display unit test results within 3 seconds |
 
-この基準を達成できていないなら、
-プロジェクトの全体の期間のうち20%程度を基準達成のために使った方がいいと思います。
-
-あと、メモリ8GBのマシンを使っているなら16GBのマシンを買いましょう or 買ってもらいましょう。
+If you are using a machine with 8GB of memory, buy or have someone buy one with 16GB or more 💸.
