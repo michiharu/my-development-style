@@ -1,13 +1,12 @@
 ---
-import Layout from '../layouts/BlogPost.astro';
+import AboutLayout from '../../layouts/AboutLayout.astro';
+
+const { hash } = Astro.url;
+const currentTab = hash !== '' ? hash : 'profile';
+// この処理はfuncsへ移動
 ---
 
-<Layout
-  title="About Me"
-  description="Lorem ipsum dolor sit amet"
-  pubDate={new Date('2023-11-05')}
-  heroImage="izu.jpg"
->
+<AboutLayout>
   <p>Hi, I'm Michiharu Fukagawa. I'm a Japanese web engineer.</p>
   <p>
     I grew up in Saitama Prefecture until I was 12 years old, and from junior
@@ -19,4 +18,4 @@ import Layout from '../layouts/BlogPost.astro';
     pursuing a career focused on engineering.
   </p>
   <p>I like making things. I likes agile development.</p>
-</Layout>
+</AboutLayout>

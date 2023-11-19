@@ -1,0 +1,27 @@
+---
+import { url } from '../funcs';
+import AboutTab from './AboutTab.astro';
+---
+
+<nav>
+  <AboutTab href={url('/about/')}>Intro</AboutTab>
+  <AboutTab href={url('/about/timeline/')}>Timeline</AboutTab>
+  <AboutTab href={url('/about/projects/')}>Projects</AboutTab>
+</nav>
+<style>
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  nav a {
+    padding: 1em 0.5em;
+    color: var(--black);
+    border-bottom: 4px solid transparent;
+    text-decoration: none;
+  }
+  nav a.active {
+    text-decoration: none;
+    border-bottom-color: var(--accent);
+  }
+</style>

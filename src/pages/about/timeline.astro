@@ -1,0 +1,21 @@
+---
+import AboutLayout from '../../layouts/AboutLayout.astro';
+
+const { hash } = Astro.url;
+const currentTab = hash !== '' ? hash : 'profile';
+// この処理はfuncsへ移動
+---
+
+<AboutLayout>
+  <p>Hi, I'm Michiharu Fukagawa. I'm a Japanese web engineer.</p>
+  <p>
+    I grew up in Saitama Prefecture until I was 12 years old, and from junior
+    high school to high school in Oita Prefecture. I entered the Business
+    Administration at Yokohama National University. Then I started Tcial Co.,
+    Ltd. Tcial's business was the operation of a small private school. The
+    number of students was around 30 to 40. After running Tcial for 4 years, I
+    became a freelance engineer. Since then, I have spent the past seven years
+    pursuing a career focused on engineering.
+  </p>
+  <p>I like making things. I likes agile development.</p>
+</AboutLayout>
